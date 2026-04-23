@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — Викторина</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card2: #273549;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --radius: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #0f172aee; backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: 680px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      font-size: 1.2rem; font-weight: 800; text-decoration: none;
+      background: linear-gradient(135deg, var(--accent2), #c4b5fd);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 6px; }
+    .nav-link {
+      color: var(--muted); text-decoration: none;
+      padding: 6px 14px; border-radius: 8px; font-size: .9rem;
+      transition: background .15s, color .15s;
+    }
+    .nav-link:hover { background: var(--card2); color: var(--text); }
+
+    /* CONTAINER */
+    .container {
+      width: 100%; max-width: 680px;
+      margin: 0 auto; padding: 40px 20px 60px;
+    }
+
+    /* SCREENS */
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn .35s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+    /* START */
+    .start-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 52px 40px; text-align: center;
+      border: 1px solid var(--border); box-shadow: 0 20px 60px #0008;
+    }
+    .start-card .emoji { font-size: 64px; display: block; margin-bottom: 20px; }
+    .start-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
+    .start-card p { color: var(--muted); font-size: 1rem; line-height: 1.6; margin-bottom: 32px; }
+    .badge {
+      display: inline-flex; gap: 20px; background: var(--card2);
+      border-radius: 999px; padding: 8px 24px; margin-bottom: 20px;
+      font-size: .85rem; color: var(--muted);
+    }
+    .badge span { display: flex; align-items: center; gap: 6px; }
+    .best-block {
+      display: inline-block;
+      background: #6366f115; border: 1px solid #6366f130;
+      color: var(--accent2); border-radius: 8px;
+      padding: 8px 18px; font-size: .85rem; margin-bottom: 28px;
+    }
+
+    /* QUIZ */
+    .progress-bar {
+      height: 5px; background: var(--border); border-radius: 99px;
+      margin-bottom: 28px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px; transition: width .4s ease;
+    }
+    .meta {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 18px;
+    }
+    .q-counter { font-size: .82rem; color: var(--muted); font-weight: 600; letter-spacing: .5px; }
+    .score-live {
+      font-size: .82rem; color: var(--accent2); font-weight: 700;
+      background: #6366f114; padding: 3px 10px; border-radius: 999px;
+    }
+
+    .question-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 36px 32px 28px; border: 1px solid var(--border);
+      box-shadow: 0 8px 32px #0006;
+    }
+    .question-text {
+      font-size: 1.2rem; font-weight: 600; line-height: 1.55;
+      margin-bottom: 28px; min-height: 60px;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--card2); border: 2px solid var(--border);
+      border-radius: 12px; padding: 14px 18px;
+      color: var(--text); font-size: .98rem; font-weight: 500;
+      cursor: pointer; text-align: left;
+      transition: border-color .18s, background .18s, transform .18s;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--accent); background: #6366f115; transform: translateX(4px);
+    }
+    .option-btn .letter {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--border); display: flex; align-items: center;
+      justify-content: center; font-weight: 700; font-size: .8rem;
+      flex-shrink: 0; transition: background .18s;
+    }
+    .option-btn.correct { border-color: var(--correct); background: #22c55e18; }
+    .option-btn.correct .letter { background: var(--correct); color: #fff; }
+    .option-btn.wrong { border-color: var(--wrong); background: #ef444418; }
+    .option-btn.wrong .letter { background: var(--wrong); color: #fff; }
+    .option-btn:disabled { cursor: default; transform: none; }
+
+    .next-row { display: flex; justify-content: flex-end; margin-top: 22px; }
+
+    /* RESULT */
+    .result-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 52px 40px; text-align: center;
+      border: 1px solid var(--border); box-shadow: 0 20px 60px #0008;
+    }
+    .result-emoji { font-size: 72px; display: block; margin-bottom: 20px; }
+    .result-card h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+    .result-card .sub { color: var(--muted); margin-bottom: 32px; }
+
+    .score-circle {
+      width: 140px; height: 140px; border-radius: 50%;
+      background: conic-gradient(var(--accent) var(--pct), var(--border) 0);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px; position: relative;
+    }
+    .score-circle::before {
+      content: ''; position: absolute; inset: 12px;
+      border-radius: 50%; background: var(--card);
+    }
+    .score-inner { position: relative; z-index: 1; text-align: center; }
+    .score-inner .num { font-size: 2rem; font-weight: 800; color: var(--accent2); }
+    .score-inner .den { font-size: .9rem; color: var(--muted); }
+
+    .result-stats {
+      display: flex; gap: 12px; justify-content: center;
+      margin-bottom: 36px; flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: var(--card2); border-radius: 999px;
+      padding: 8px 18px; font-size: .85rem; border: 1px solid var(--border);
+    }
+    .stat-pill.green { border-color: var(--correct); color: var(--correct); }
+    .stat-pill.red { border-color: var(--wrong); color: var(--wrong); }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 12px;
+      padding: 14px 28px; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: opacity .18s, transform .18s;
+      box-shadow: 0 4px 18px #6366f155; text-decoration: none;
+    }
+    .btn:hover { opacity: .9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn.secondary {
+      background: var(--card2); box-shadow: none;
+      border: 1px solid var(--border); color: var(--text);
+    }
+    .btn:disabled { opacity: .4; cursor: default; transform: none; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="about.html" class="nav-link">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- START SCREEN -->
+  <div class="screen active" id="screen-start">
+    <div class="start-card">
+      <span class="emoji" id="cat-emoji">🧠</span>
+      <h1 id="cat-title">Викторина</h1>
+      <p id="cat-desc">Проверь свои знания!</p>
+      <div class="badge">
+        <span>📋 10 вопросов</span>
+        <span>⏱ ~3 мин</span>
+        <span>🎯 1 попытка</span>
+      </div>
+      <br>
+      <div id="best-block" style="display:none">
+        <div class="best-block" id="best-text">🏅 Лучший результат: —</div>
+        <br>
+      </div>
+      <button class="btn" onclick="startQuiz()">▶ Начать викторину</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="meta">
+      <span class="q-counter" id="q-counter">Вопрос 1 из 10</span>
+      <span class="score-live" id="score-live">✓ 0</span>
+    </div>
+    <div class="question-card">
+      <div class="question-text" id="question-text"></div>
+      <div class="options" id="options"></div>
+      <div class="next-row">
+        <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Далее →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <span class="result-emoji" id="result-emoji">🏆</span>
+      <h2 id="result-title">Отличный результат!</h2>
+      <p class="sub" id="result-sub">Ты ответил правильно на большинство вопросов</p>
+      <div class="score-circle" id="score-circle">
+        <div class="score-inner">
+          <div class="num" id="score-num">0</div>
+          <div class="den" id="score-den">из 10</div>
+        </div>
+      </div>
+      <div class="result-stats">
+        <div class="stat-pill green" id="stat-correct">✓ 0 правильно</div>
+        <div class="stat-pill red" id="stat-wrong">✗ 0 неправильно</div>
+        <div class="stat-pill" id="stat-pct">0%</div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn secondary" onclick="startQuiz()">↺ Ещё раз</button>
+        <button class="btn secondary" onclick="location.href='index.html'">🏠 Главная</button>
+        <button class="btn" onclick="location.href='leaderboard.html'">🏆 Лидеры</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ALL = {
+  general: {
+    name: 'Общие знания', emoji: '🌍',
+    desc: 'История, география, литература и наука — 10 вопросов.',
+    qs: [
+      { q: "Какой элемент является наименьшей единицей живого организма?", opts: ["Атом", "Молекула", "Клетка", "Ядро"], c: 2 },
+      { q: "В каком году был запущен первый искусственный спутник Земли?", opts: ["1945", "1957", "1961", "1969"], c: 1 },
+      { q: "Столица Австралии — это:", opts: ["Сидней", "Мельбурн", "Брисбен", "Канберра"], c: 3 },
+      { q: "Скорость света в вакууме составляет приблизительно:", opts: ["300 000 км/с", "150 000 км/с", "1 080 000 км/ч", "30 000 км/с"], c: 0 },
+      { q: "Кто написал роман «Преступление и наказание»?", opts: ["Лев Толстой", "Антон Чехов", "Фёдор Достоевский", "Иван Тургенев"], c: 2 },
+      { q: "Химический символ Au обозначает:", opts: ["Серебро", "Алюминий", "Аргон", "Золото"], c: 3 },
+      { q: "Сколько планет в Солнечной системе?", opts: ["7", "8", "9", "10"], c: 1 },
+      { q: "Самая высокая вершина мира:", opts: ["К2", "Денали", "Эльбрус", "Эверест"], c: 3 },
+      { q: "Столица Японии:", opts: ["Осака", "Сеул", "Токио", "Пекин"], c: 2 },
+      { q: "Какая река считается самой длинной в мире?", opts: ["Амазонка", "Нил", "Миссисипи", "Янцзы"], c: 1 }
+    ]
+  },
+  science: {
+    name: 'Наука', emoji: '🔬',
+    desc: 'Биология, физика, химия и астрономия — 10 вопросов.',
+    qs: [
+      { q: "Какова химическая формула воды?", opts: ["HO", "H₂O₂", "H₂O", "H₃O"], c: 2 },
+      { q: "Какая планета ближе всего к Солнцу?", opts: ["Венера", "Земля", "Марс", "Меркурий"], c: 3 },
+      { q: "Какой природный материал является самым твёрдым?", opts: ["Кварц", "Корунд", "Алмаз", "Гранит"], c: 2 },
+      { q: "Каков атомный номер углерода?", opts: ["4", "6", "8", "12"], c: 1 },
+      { q: "Сколько хромосом содержится в клетках человека?", opts: ["23", "44", "46", "48"], c: 2 },
+      { q: "Какой орган вырабатывает инсулин?", opts: ["Печень", "Почка", "Желудок", "Поджелудочная железа"], c: 3 },
+      { q: "Приблизительная скорость звука в воздухе:", opts: ["240 м/с", "340 м/с", "440 м/с", "540 м/с"], c: 1 },
+      { q: "Что изучает энтомология?", opts: ["Птиц", "Рыб", "Насекомых", "Млекопитающих"], c: 2 },
+      { q: "Какой газ составляет наибольшую долю атмосферы Земли?", opts: ["Кислород", "Аргон", "Углекислый газ", "Азот"], c: 3 },
+      { q: "За сколько дней Земля совершает полный оборот вокруг Солнца?", opts: ["364", "365", "366", "365,25"], c: 3 }
+    ]
+  },
+  tech: {
+    name: 'Технологии', emoji: '💻',
+    desc: 'Программирование, IT и интернет — 10 вопросов.',
+    qs: [
+      { q: "Что означает аббревиатура HTML?", opts: ["HyperText Markup Language", "HighText Machine Language", "Hyperlink and Text Markup Language", "Home Tool Markup Language"], c: 0 },
+      { q: "Для чего используется CSS?", opts: ["Серверная логика приложений", "Описание внешнего вида веб-страниц", "Работа с базами данных", "Протокол передачи данных"], c: 1 },
+      { q: "Сколько битов содержит один байт?", opts: ["4", "16", "8", "32"], c: 2 },
+      { q: "Сколько байтов в одном килобайте?", opts: ["100", "512", "1000", "1024"], c: 3 },
+      { q: "В каком году была основана компания Google?", opts: ["1994", "1996", "1998", "2001"], c: 2 },
+      { q: "Что такое RAM?", opts: ["Жёсткий диск", "Видеокарта", "Оперативная память", "Процессор"], c: 2 },
+      { q: "Кто создал операционную систему Linux?", opts: ["Билл Гейтс", "Стив Джобс", "Линус Торвальдс", "Деннис Ритчи"], c: 2 },
+      { q: "Что означает «IP» в IP-адресе?", opts: ["Internal Protocol", "Internet Protocol", "Intranet Process", "Interface Program"], c: 1 },
+      { q: "В каком году появился язык программирования Python?", opts: ["1985", "1991", "1995", "1999"], c: 1 },
+      { q: "Что такое Git?", opts: ["Текстовый редактор", "Язык программирования", "Браузер", "Система контроля версий"], c: 3 }
+    ]
+  }
+};
+
+const LETTERS = ['А', 'Б', 'В', 'Г'];
+let cat = 'general', QUESTIONS = [], current = 0, score = 0, answered = false;
+
+function init() {
+  const p = new URLSearchParams(location.search);
+  cat = p.get('cat') || 'general';
+  if (!ALL[cat]) cat = 'general';
+  const data = ALL[cat];
+  QUESTIONS = data.qs;
+  document.getElementById('cat-emoji').textContent = data.emoji;
+  document.getElementById('cat-title').textContent = data.name;
+  document.getElementById('cat-desc').textContent = data.desc;
+  document.title = `WowQuiz — ${data.name}`;
+
+  const saved = JSON.parse(localStorage.getItem('wowquiz_results') || '[]');
+  const best = saved.filter(r => r.cat === cat).reduce((m, r) => Math.max(m, r.score), -1);
+  if (best >= 0) {
+    document.getElementById('best-block').style.display = 'block';
+    document.getElementById('best-text').textContent = `🏅 Твой лучший результат: ${best} из ${QUESTIONS.length}`;
+  }
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  current = 0; score = 0; answered = false;
+  show('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  answered = false;
+  document.getElementById('q-counter').textContent = `Вопрос ${current + 1} из ${QUESTIONS.length}`;
+  document.getElementById('score-live').textContent = `✓ ${score}`;
+  document.getElementById('progress').style.width = `${(current / QUESTIONS.length) * 100}%`;
+  document.getElementById('question-text').textContent = q.q;
+  document.getElementById('btn-next').disabled = true;
+
+  const container = document.getElementById('options');
+  container.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="letter">${LETTERS[i]}</span>${opt}`;
+    btn.onclick = () => selectAnswer(i);
+    container.appendChild(btn);
+  });
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.disabled = true);
+  if (idx === q.c) { buttons[idx].classList.add('correct'); score++; }
+  else { buttons[idx].classList.add('wrong'); buttons[q.c].classList.add('correct'); }
+  document.getElementById('score-live').textContent = `✓ ${score}`;
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-next').textContent =
+    current === QUESTIONS.length - 1 ? 'Результат 🎉' : 'Далее →';
+}
+
+function nextQuestion() {
+  if (!answered) return;
+  current++;
+  if (current >= QUESTIONS.length) showResult();
+  else renderQuestion();
+}
+
+function showResult() {
+  const total = QUESTIONS.length;
+  const pct = Math.round((score / total) * 100);
+
+  const saved = JSON.parse(localStorage.getItem('wowquiz_results') || '[]');
+  saved.push({ cat, catName: ALL[cat].name, score, total, pct, date: new Date().toISOString() });
+  localStorage.setItem('wowquiz_results', JSON.stringify(saved));
+
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('score-den').textContent = `из ${total}`;
+  document.getElementById('score-circle').style.setProperty('--pct', `${pct}%`);
+  document.getElementById('stat-correct').textContent = `✓ ${score} правильно`;
+  document.getElementById('stat-wrong').textContent = `✗ ${total - score} неправильно`;
+  document.getElementById('stat-pct').textContent = `${pct}%`;
+
+  let emoji, title, sub;
+  if (pct === 100) { emoji = '🏆'; title = 'Идеально!'; sub = 'Все вопросы правильно — блестяще!'; }
+  else if (pct >= 80) { emoji = '🥇'; title = 'Отличный результат!'; sub = 'Ты хорошо знаешь материал. Так держать!'; }
+  else if (pct >= 60) { emoji = '👍'; title = 'Хорошая работа!'; sub = 'Неплохо, но есть над чем поработать.'; }
+  else if (pct >= 40) { emoji = '📚'; title = 'Неплохо!'; sub = 'Больше половины правильно — есть прогресс!'; }
+  else { emoji = '💪'; title = 'Не сдавайся!'; sub = 'Попробуй ещё раз — у тебя всё получится!'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-sub').textContent = sub;
+  document.getElementById('progress').style.width = '100%';
+  show('screen-result');
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — Таблица лидеров</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card2: #273549;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --radius: 16px;
+    }
+
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh;
+    }
+
+    /* NAV */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #0f172aee; backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: 900px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; height: 60px;
+    }
+    .nav-logo {
+      font-size: 1.2rem; font-weight: 800; text-decoration: none;
+      background: linear-gradient(135deg, var(--accent2), #c4b5fd);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 6px; }
+    .nav-link {
+      color: var(--muted); text-decoration: none;
+      padding: 6px 14px; border-radius: 8px; font-size: .9rem;
+      transition: background .15s, color .15s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--card2); color: var(--text); }
+
+    .main { max-width: 900px; margin: 0 auto; padding: 48px 20px 80px; }
+
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+    }
+    .page-header h1 { font-size: 1.9rem; font-weight: 800; }
+
+    /* SUMMARY PILLS */
+    .summary { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 32px; }
+    .s-pill {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 22px; flex: 1; min-width: 130px;
+    }
+    .s-pill .val { font-size: 1.7rem; font-weight: 800; color: var(--accent2); }
+    .s-pill .lbl { font-size: .76rem; color: var(--muted); margin-top: 3px; }
+
+    /* FILTERS */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .filter-btn {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 999px; padding: 7px 18px; font-size: .85rem;
+      color: var(--muted); cursor: pointer; transition: all .15s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* TABLE */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); }
+    table {
+      width: 100%; border-collapse: collapse;
+      background: var(--card); border-radius: var(--radius);
+      overflow: hidden;
+    }
+    thead tr { background: var(--card2); }
+    th {
+      padding: 13px 18px; text-align: left;
+      font-size: .75rem; text-transform: uppercase;
+      letter-spacing: .7px; color: var(--muted); font-weight: 600;
+    }
+    td { padding: 13px 18px; border-top: 1px solid var(--border); font-size: .92rem; }
+    tr:hover td { background: #ffffff04; }
+
+    .rank { font-weight: 800; font-size: 1rem; }
+    .gold   { color: #fbbf24; }
+    .silver { color: #94a3b8; }
+    .bronze { color: #cd7c2f; }
+    .rank-num { color: var(--muted); }
+
+    .cat-badge {
+      display: inline-block; background: #6366f115; border: 1px solid #6366f130;
+      color: var(--accent2); border-radius: 6px; padding: 3px 10px; font-size: .75rem;
+    }
+
+    .pct-bar { display: flex; align-items: center; gap: 10px; }
+    .pct-track {
+      flex: 1; height: 6px; background: var(--border);
+      border-radius: 99px; overflow: hidden; min-width: 80px;
+    }
+    .pct-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .pct-label { font-weight: 700; font-size: .85rem; color: var(--accent2); min-width: 36px; }
+
+    /* EMPTY */
+    .empty {
+      background: var(--card); border: 1px dashed var(--border);
+      border-radius: var(--radius); padding: 64px 20px; text-align: center;
+    }
+    .empty .icon { font-size: 3rem; margin-bottom: 14px; }
+    .empty p { color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+
+    /* BTN */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 12px;
+      padding: 12px 24px; font-size: .95rem; font-weight: 600;
+      cursor: pointer; transition: opacity .18s, transform .18s;
+      box-shadow: 0 4px 18px #6366f155; text-decoration: none;
+    }
+    .btn:hover { opacity: .9; transform: translateY(-1px); }
+    .btn.danger {
+      background: linear-gradient(135deg, #ef4444, #f87171);
+      box-shadow: 0 4px 14px #ef444430;
+      font-size: .85rem; padding: 9px 18px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link active">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="about.html" class="nav-link">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="page-header">
+    <h1>🏆 Таблица лидеров</h1>
+    <button class="btn danger" onclick="clearHistory()">🗑 Очистить историю</button>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all', this)">Все категории</button>
+    <button class="filter-btn" onclick="setFilter('general', this)">🌍 Общие знания</button>
+    <button class="filter-btn" onclick="setFilter('science', this)">🔬 Наука</button>
+    <button class="filter-btn" onclick="setFilter('tech', this)">💻 Технологии</button>
+  </div>
+
+  <div id="content"></div>
+
+</main>
+
+<script>
+let currentFilter = 'all';
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function clearHistory() {
+  if (!confirm('Удалить всю историю результатов?')) return;
+  localStorage.removeItem('wowquiz_results');
+  renderSummary();
+  renderTable();
+}
+
+function renderSummary() {
+  const results = JSON.parse(localStorage.getItem('wowquiz_results') || '[]');
+  const total = results.length;
+  const best = total ? Math.max(...results.map(r => r.pct)) : 0;
+  const avg = total ? Math.round(results.reduce((s, r) => s + r.pct, 0) / total) : 0;
+  document.getElementById('summary').innerHTML = `
+    <div class="s-pill"><div class="val">${total}</div><div class="lbl">Попыток всего</div></div>
+    <div class="s-pill"><div class="val">${best ? best + '%' : '—'}</div><div class="lbl">Лучший результат</div></div>
+    <div class="s-pill"><div class="val">${avg ? avg + '%' : '—'}</div><div class="lbl">Средний результат</div></div>
+  `;
+}
+
+function renderTable() {
+  const results = JSON.parse(localStorage.getItem('wowquiz_results') || '[]');
+  const filtered = currentFilter === 'all' ? results : results.filter(r => r.cat === currentFilter);
+  const sorted = [...filtered].sort((a, b) => b.pct - a.pct || new Date(b.date) - new Date(a.date));
+  const el = document.getElementById('content');
+
+  if (!sorted.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="icon">📭</div>
+      <p>${currentFilter === 'all'
+        ? 'Ты ещё не прошёл ни одной викторины.<br>Выбери категорию и начни!'
+        : 'Нет результатов по этой категории.'}</p>
+      <a class="btn" href="index.html">Выбрать категорию</a>
+    </div>`;
+    return;
+  }
+
+  const rows = sorted.map((r, i) => {
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'rank-num';
+    const rankLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1;
+    const date = new Date(r.date).toLocaleString('ru', {
+      day: '2-digit', month: '2-digit', year: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    });
+    return `<tr>
+      <td><span class="rank ${rankClass}">${rankLabel}</span></td>
+      <td><span class="cat-badge">${r.catName}</span></td>
+      <td><strong>${r.score}</strong> <span style="color:var(--muted)">из ${r.total}</span></td>
+      <td>
+        <div class="pct-bar">
+          <div class="pct-track"><div class="pct-fill" style="width:${r.pct}%"></div></div>
+          <span class="pct-label">${r.pct}%</span>
+        </div>
+      </td>
+      <td style="color:var(--muted);font-size:.8rem">${date}</td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `<div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Категория</th><th>Счёт</th><th>Результат</th><th>Дата</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+renderSummary();
+renderTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — Профиль</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card2: #273549;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --radius: 16px;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #0f172aee; backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; height: 60px;
+    }
+    .nav-logo {
+      font-size: 1.2rem; font-weight: 800; text-decoration: none;
+      background: linear-gradient(135deg, var(--accent2), #c4b5fd);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .nav-link {
+      color: var(--muted); text-decoration: none;
+      padding: 6px 12px; border-radius: 8px; font-size: .85rem;
+      transition: background .15s, color .15s; white-space: nowrap;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--card2); color: var(--text); }
+
+    .main { max-width: 960px; margin: 0 auto; padding: 48px 20px 80px; }
+
+    .page-title { font-size: 1.9rem; font-weight: 800; margin-bottom: 32px; }
+
+    /* STATS GRID */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 40px; }
+    .stat-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 18px;
+    }
+    .stat-box .icon { font-size: 1.4rem; margin-bottom: 10px; }
+    .stat-box .val { font-size: 1.9rem; font-weight: 800; color: var(--accent2); }
+    .stat-box .lbl { font-size: .76rem; color: var(--muted); margin-top: 4px; }
+
+    /* CATEGORY PROGRESS */
+    .section-title {
+      font-size: .75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); margin-bottom: 16px;
+    }
+    .cat-progress { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+    .cat-row {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .cat-row-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .cat-row-info { flex: 1; min-width: 120px; }
+    .cat-row-name { font-weight: 700; font-size: .95rem; margin-bottom: 6px; }
+    .cat-row-meta { font-size: .78rem; color: var(--muted); }
+    .cat-row-bar { flex: 2; min-width: 140px; }
+    .bar-track {
+      height: 8px; background: var(--border); border-radius: 99px;
+      overflow: hidden; margin-bottom: 4px;
+    }
+    .bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .6s ease; }
+    .bar-label { font-size: .78rem; color: var(--accent2); font-weight: 700; }
+    .cat-row-score {
+      font-size: 1.3rem; font-weight: 800; color: var(--accent2);
+      white-space: nowrap; min-width: 60px; text-align: right;
+    }
+    .no-data { color: var(--muted); font-size: .85rem; }
+
+    /* ACHIEVEMENTS */
+    .achievements-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px; margin-bottom: 40px;
+    }
+    .ach-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 16px;
+      transition: border-color .2s;
+    }
+    .ach-card.unlocked { border-color: #6366f150; background: #6366f108; }
+    .ach-card .ach-icon { font-size: 2rem; margin-bottom: 8px; }
+    .ach-card.locked .ach-icon { filter: grayscale(1); opacity: .4; }
+    .ach-card .ach-name { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
+    .ach-card.locked .ach-name { color: var(--muted); }
+    .ach-card .ach-desc { font-size: .78rem; color: var(--muted); line-height: 1.4; }
+    .ach-badge {
+      display: inline-block; font-size: .68rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 999px; margin-top: 6px;
+    }
+    .ach-badge.done { background: #22c55e1a; color: var(--correct); }
+    .ach-badge.todo { background: #ffffff0a; color: var(--muted); }
+
+    /* HISTORY */
+    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .hist-row {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .hist-cat { font-size: .8rem; color: var(--accent2); min-width: 100px; }
+    .hist-score { font-weight: 700; font-size: .95rem; }
+    .hist-pct {
+      font-size: .78rem; font-weight: 700; padding: 2px 8px;
+      border-radius: 999px; margin-left: auto;
+    }
+    .hist-pct.high { background: #22c55e1a; color: var(--correct); }
+    .hist-pct.mid  { background: #f59e0b1a; color: #f59e0b; }
+    .hist-pct.low  { background: #ef44441a; color: var(--wrong); }
+    .hist-date { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+
+    .empty-state {
+      background: var(--card); border: 1px dashed var(--border);
+      border-radius: var(--radius); padding: 48px 20px; text-align: center;
+    }
+    .empty-state p { color: var(--muted); margin-bottom: 20px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 12px;
+      padding: 11px 22px; font-size: .9rem; font-weight: 600;
+      cursor: pointer; transition: opacity .18s, transform .18s;
+      box-shadow: 0 4px 18px #6366f155; text-decoration: none;
+    }
+    .btn:hover { opacity: .9; transform: translateY(-1px); }
+    .btn.danger {
+      background: linear-gradient(135deg, #ef4444, #f87171);
+      box-shadow: 0 4px 14px #ef444430; font-size: .82rem; padding: 8px 16px;
+    }
+
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link active">👤 Профиль</a>
+      <a href="about.html" class="nav-link">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="page-title">👤 Мой профиль</div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="stats-row"></div>
+
+  <!-- Category progress -->
+  <div class="section-title">Прогресс по категориям</div>
+  <div class="cat-progress" id="cat-progress"></div>
+
+  <!-- Achievements -->
+  <div class="section-header">
+    <div class="section-title" style="margin-bottom:0">Достижения</div>
+    <span id="ach-counter" style="font-size:.8rem;color:var(--muted)"></span>
+  </div>
+  <div class="achievements-grid" id="achievements"></div>
+
+  <!-- History -->
+  <div class="section-header">
+    <div class="section-title" style="margin-bottom:0">История игр</div>
+    <button class="btn danger" onclick="clearAll()">🗑 Очистить</button>
+  </div>
+  <div id="history"></div>
+
+</main>
+
+<script>
+const CATS = {
+  general: { name: 'Общие знания', emoji: '🌍' },
+  science: { name: 'Наука',        emoji: '🔬' },
+  tech:    { name: 'Технологии',   emoji: '💻' }
+};
+
+const ACHIEVEMENTS = [
+  { icon: '🎯', name: 'Первый шаг',    desc: 'Пройди первую викторину',               check: r => r.length >= 1 },
+  { icon: '🔥', name: 'На разогреве',  desc: 'Пройди 5 викторин',                    check: r => r.length >= 5 },
+  { icon: '🌟', name: 'Постоянство',   desc: 'Пройди 10 викторин',                   check: r => r.length >= 10 },
+  { icon: '⭐', name: 'Хорошист',      desc: 'Набери 80%+ в любой викторине',         check: r => r.some(x => x.pct >= 80) },
+  { icon: '🏆', name: 'Отличник',      desc: 'Набери 100% в любой викторине',         check: r => r.some(x => x.pct === 100) },
+  { icon: '🌍', name: 'Эрудит',        desc: 'Пройди все три категории',              check: r => new Set(r.map(x => x.cat)).size >= 3 },
+  { icon: '🎓', name: 'Мастер',        desc: 'Набери 80%+ в каждой из трёх категорий', check: r => ['general','science','tech'].every(c => r.filter(x=>x.cat===c).some(x=>x.pct>=80)) },
+  { icon: '💎', name: 'Перфекционист', desc: 'Набери 100% в каждой категории',        check: r => ['general','science','tech'].every(c => r.filter(x=>x.cat===c).some(x=>x.pct===100)) }
+];
+
+function clearAll() {
+  if (!confirm('Удалить всю историю результатов?')) return;
+  localStorage.removeItem('wowquiz_results');
+  renderAll();
+}
+
+function renderAll() {
+  const results = JSON.parse(localStorage.getItem('wowquiz_results') || '[]');
+  renderStats(results);
+  renderCatProgress(results);
+  renderAchievements(results);
+  renderHistory(results);
+}
+
+function renderStats(results) {
+  const total = results.length;
+  const best = total ? Math.max(...results.map(r => r.pct)) : null;
+  const avg = total ? Math.round(results.reduce((s, r) => s + r.pct, 0) / total) : null;
+  const correct = results.reduce((s, r) => s + r.score, 0);
+
+  document.getElementById('stats-row').innerHTML = [
+    { icon: '🎮', val: total, lbl: 'Всего игр' },
+    { icon: '🏅', val: best !== null ? best + '%' : '—', lbl: 'Лучший результат' },
+    { icon: '📊', val: avg !== null ? avg + '%' : '—', lbl: 'Средний результат' },
+    { icon: '✅', val: correct, lbl: 'Правильных ответов' }
+  ].map(s => `<div class="stat-box">
+    <div class="icon">${s.icon}</div>
+    <div class="val">${s.val}</div>
+    <div class="lbl">${s.lbl}</div>
+  </div>`).join('');
+}
+
+function renderCatProgress(results) {
+  const el = document.getElementById('cat-progress');
+  if (!results.length) {
+    el.innerHTML = '<div class="empty-state"><p>Ещё нет данных. Пройди хотя бы одну викторину!</p><a class="btn" href="index.html">Начать</a></div>';
+    return;
+  }
+  el.innerHTML = Object.entries(CATS).map(([key, cat]) => {
+    const catResults = results.filter(r => r.cat === key);
+    if (!catResults.length) {
+      return `<div class="cat-row">
+        <span class="cat-row-icon">${cat.emoji}</span>
+        <div class="cat-row-info"><div class="cat-row-name">${cat.name}</div><div class="cat-row-meta no-data">Ещё не пройдено</div></div>
+        <div class="cat-row-bar"><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><div class="bar-label">—</div></div>
+        <div class="cat-row-score" style="color:var(--muted)">—</div>
+      </div>`;
+    }
+    const best = Math.max(...catResults.map(r => r.pct));
+    const bestScore = catResults.find(r => r.pct === best);
+    return `<div class="cat-row">
+      <span class="cat-row-icon">${cat.emoji}</span>
+      <div class="cat-row-info">
+        <div class="cat-row-name">${cat.name}</div>
+        <div class="cat-row-meta">Сыграно: ${catResults.length} раз</div>
+      </div>
+      <div class="cat-row-bar">
+        <div class="bar-track"><div class="bar-fill" style="width:${best}%"></div></div>
+        <div class="bar-label">Лучший: ${bestScore.score} из ${bestScore.total}</div>
+      </div>
+      <div class="cat-row-score">${best}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAchievements(results) {
+  const unlocked = ACHIEVEMENTS.filter(a => a.check(results)).length;
+  document.getElementById('ach-counter').textContent = `${unlocked} / ${ACHIEVEMENTS.length} разблокировано`;
+  document.getElementById('achievements').innerHTML = ACHIEVEMENTS.map(a => {
+    const done = a.check(results);
+    return `<div class="ach-card ${done ? 'unlocked' : 'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-name">${a.name}</div>
+      <div class="ach-desc">${a.desc}</div>
+      <span class="ach-badge ${done ? 'done' : 'todo'}">${done ? '✓ Получено' : 'Заблокировано'}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderHistory(results) {
+  const el = document.getElementById('history');
+  if (!results.length) {
+    el.innerHTML = '<div class="empty-state"><p>История пуста. Сыграй в викторину и результаты появятся здесь!</p><a class="btn" href="index.html">Играть</a></div>';
+    return;
+  }
+  const reversed = [...results].reverse().slice(0, 20);
+  el.innerHTML = '<div class="history-list">' + reversed.map(r => {
+    const pctClass = r.pct >= 70 ? 'high' : r.pct >= 40 ? 'mid' : 'low';
+    const date = new Date(r.date).toLocaleString('ru', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const cat = CATS[r.cat] || { emoji: '❓', name: r.catName };
+    return `<div class="hist-row">
+      <span style="font-size:1.1rem">${cat.emoji}</span>
+      <span class="hist-cat">${r.catName}</span>
+      <span class="hist-score">${r.score} из ${r.total}</span>
+      <span class="hist-pct ${pctClass}">${r.pct}%</span>
+      <span class="hist-date">${date}</span>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+renderAll();
+</script>
+</body>
+</html>

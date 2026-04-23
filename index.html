@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wow Quiz!</title>
+  <title>WowQuiz — Главная</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -26,365 +26,235 @@
       color: var(--text);
       font-family: 'Segoe UI', system-ui, sans-serif;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 680px;
+    /* NAV */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #0f172aee;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: 1000px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      font-size: 1.2rem; font-weight: 800;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--accent2), #c4b5fd);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 6px; }
+    .nav-link {
+      color: var(--muted); text-decoration: none;
+      padding: 6px 14px; border-radius: 8px; font-size: .9rem;
+      transition: background .15s, color .15s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--card2); color: var(--text); }
+
+    /* MAIN */
+    .main {
+      max-width: 1000px; margin: 0 auto;
+      padding: 64px 20px 80px;
     }
 
-    /* ── SCREENS ── */
-    .screen { display: none; }
-    .screen.active { display: block; animation: fadeIn .35s ease; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
-
-    /* ── START ── */
-    .start-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 52px 40px;
-      text-align: center;
-      border: 1px solid var(--border);
-      box-shadow: 0 20px 60px #0008;
+    /* HERO */
+    .hero { text-align: center; margin-bottom: 64px; }
+    .hero-badge {
+      display: inline-block;
+      background: #6366f120; border: 1px solid #6366f140;
+      color: var(--accent2); border-radius: 999px;
+      padding: 5px 18px; font-size: .8rem; font-weight: 600;
+      margin-bottom: 22px; letter-spacing: .5px;
     }
-    .start-card .emoji { font-size: 64px; display: block; margin-bottom: 20px; }
-    .start-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
-    .start-card p { color: var(--muted); font-size: 1rem; line-height: 1.6; margin-bottom: 32px; }
-    .badge {
-      display: inline-flex; gap: 24px; background: var(--card2);
-      border-radius: 999px; padding: 8px 24px; margin-bottom: 36px;
-      font-size: .85rem; color: var(--muted);
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; line-height: 1.15; margin-bottom: 18px;
+      background: linear-gradient(135deg, #f1f5f9 40%, var(--accent2));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .badge span { display: flex; align-items: center; gap: 6px; }
-
-    /* ── QUIZ ── */
-    .progress-bar {
-      height: 5px; background: var(--border); border-radius: 99px;
-      margin-bottom: 28px; overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border-radius: 99px; transition: width .4s ease;
-    }
-    .meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-    .q-counter { font-size: .82rem; color: var(--muted); font-weight: 600; letter-spacing: .5px; }
-    .score-live {
-      font-size: .82rem; color: var(--accent2); font-weight: 700;
-      background: #6366f114; padding: 3px 10px; border-radius: 999px;
+    .hero p {
+      color: var(--muted); font-size: 1.1rem;
+      max-width: 460px; margin: 0 auto 36px;
+      line-height: 1.6;
     }
 
-    .question-card {
-      background: var(--card); border-radius: var(--radius);
-      padding: 36px 32px 28px; border: 1px solid var(--border);
-      box-shadow: 0 8px 32px #0006;
+    /* CATEGORIES */
+    .section-label {
+      font-size: .75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted); margin-bottom: 18px;
     }
-    .question-text {
-      font-size: 1.2rem; font-weight: 600; line-height: 1.55;
-      margin-bottom: 28px; min-height: 60px;
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px; margin-bottom: 60px;
+    }
+    .cat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 30px 26px;
+      cursor: pointer;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      display: flex; flex-direction: column; gap: 10px;
+      text-decoration: none; color: inherit;
+    }
+    .cat-card:hover {
+      border-color: var(--accent); transform: translateY(-4px);
+      box-shadow: 0 16px 48px #6366f11a;
+    }
+    .cat-emoji { font-size: 2.4rem; line-height: 1; }
+    .cat-card h3 { font-size: 1.15rem; font-weight: 700; }
+    .cat-card p { color: var(--muted); font-size: .88rem; line-height: 1.5; flex: 1; }
+    .cat-meta {
+      font-size: .76rem; color: var(--accent2);
+      background: #6366f115; border-radius: 999px;
+      padding: 4px 12px; align-self: flex-start;
+    }
+    .cat-start {
+      margin-top: 6px; align-self: flex-start;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 10px;
+      padding: 10px 20px; font-size: .88rem; font-weight: 600;
+      cursor: pointer; transition: opacity .15s, transform .15s;
+      box-shadow: 0 4px 14px #6366f145;
+    }
+    .cat-start:hover { opacity: .9; transform: translateY(-1px); }
+
+    /* RECENT */
+    .recent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 12px;
+    }
+    .recent-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px;
+      transition: border-color .15s;
+    }
+    .recent-card:hover { border-color: var(--border); }
+    .recent-cat { font-size: .75rem; color: var(--accent2); margin-bottom: 6px; }
+    .recent-score { font-size: 1.5rem; font-weight: 800; }
+    .recent-score span { font-size: .82rem; font-weight: 400; color: var(--muted); }
+    .recent-pct {
+      display: inline-block; font-size: .75rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 999px; margin-top: 6px;
+    }
+    .recent-pct.high { background: #22c55e1a; color: var(--correct); }
+    .recent-pct.mid { background: #f59e0b1a; color: #f59e0b; }
+    .recent-pct.low { background: #ef44441a; color: var(--wrong); }
+    .recent-date { font-size: .72rem; color: var(--muted); margin-top: 4px; }
+
+    .empty-recent {
+      color: var(--muted); font-size: .9rem;
+      background: var(--card); border: 1px dashed var(--border);
+      border-radius: 12px; padding: 28px 20px;
+      text-align: center; line-height: 1.6;
     }
 
-    .options { display: flex; flex-direction: column; gap: 10px; }
-    .option-btn {
-      background: var(--card2); border: 2px solid var(--border);
-      border-radius: 12px; padding: 14px 18px;
-      color: var(--text); font-size: .98rem; font-weight: 500;
-      cursor: pointer; text-align: left; transition: all .18s ease;
-      display: flex; align-items: center; gap: 12px;
-    }
-    .option-btn:hover:not(:disabled) { border-color: var(--accent); background: #6366f115; transform: translateX(4px); }
-    .option-btn .letter {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: var(--border); display: flex; align-items: center;
-      justify-content: center; font-weight: 700; font-size: .8rem;
-      flex-shrink: 0; transition: background .18s;
-    }
-    .option-btn.correct { border-color: var(--correct); background: #22c55e18; }
-    .option-btn.correct .letter { background: var(--correct); color: #fff; }
-    .option-btn.wrong { border-color: var(--wrong); background: #ef444418; }
-    .option-btn.wrong .letter { background: var(--wrong); color: #fff; }
-    .option-btn:disabled { cursor: default; transform: none; }
-
-    .next-row { display: flex; justify-content: flex-end; margin-top: 22px; }
-
-    /* ── RESULT ── */
-    .result-card {
-      background: var(--card); border-radius: var(--radius);
-      padding: 52px 40px; text-align: center;
-      border: 1px solid var(--border); box-shadow: 0 20px 60px #0008;
-    }
-    .result-emoji { font-size: 72px; display: block; margin-bottom: 20px; }
-    .result-card h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
-    .result-card .sub { color: var(--muted); margin-bottom: 32px; }
-
-    .score-circle {
-      width: 140px; height: 140px; border-radius: 50%;
-      background: conic-gradient(var(--accent) var(--pct), var(--border) 0);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 28px; position: relative;
-    }
-    .score-circle::before {
-      content: ''; position: absolute; inset: 12px;
-      border-radius: 50%; background: var(--card);
-    }
-    .score-inner { position: relative; z-index: 1; text-align: center; }
-    .score-inner .num { font-size: 2rem; font-weight: 800; color: var(--accent2); }
-    .score-inner .den { font-size: .9rem; color: var(--muted); }
-
-    .result-stats {
-      display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap;
-    }
-    .stat-pill {
-      background: var(--card2); border-radius: 999px;
-      padding: 8px 18px; font-size: .85rem; border: 1px solid var(--border);
-    }
-    .stat-pill.green { border-color: var(--correct); color: var(--correct); }
-    .stat-pill.red { border-color: var(--wrong); color: var(--wrong); }
-
-    /* ── BUTTONS ── */
+    /* BTN */
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #fff; border: none; border-radius: 12px;
-      padding: 14px 28px; font-size: 1rem; font-weight: 600;
+      padding: 12px 24px; font-size: .95rem; font-weight: 600;
       cursor: pointer; transition: opacity .18s, transform .18s;
-      box-shadow: 0 4px 18px #6366f155;
+      box-shadow: 0 4px 18px #6366f155; text-decoration: none;
     }
     .btn:hover { opacity: .9; transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
-    .btn.secondary {
-      background: var(--card2); box-shadow: none;
-      border: 1px solid var(--border); color: var(--text);
+
+    .leaderboard-link {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 20px;
     }
-    .btn:disabled { opacity: .4; cursor: default; transform: none; }
   </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- START SCREEN -->
-  <div class="screen active" id="screen-start">
-    <div class="start-card">
-      <span class="emoji">🧠</span>
-      <h1>Квиз: Общие знания</h1>
-      <p>Проверь свои знания в разных областях — наука, история, технологии и не только. 10 вопросов, 4 варианта ответа.</p>
-      <div class="badge">
-        <span>📋 10 вопросов</span>
-        <span>⏱ ~3 минуты</span>
-        <span>🎯 1 попытка</span>
-      </div>
-      <br>
-      <button class="btn" onclick="startQuiz()">▶ Начать викторину</button>
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Главная</a>
+      <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="about.html" class="nav-link">О нас</a>
     </div>
   </div>
+</nav>
 
-  <!-- QUIZ SCREEN -->
-  <div class="screen" id="screen-quiz">
-    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-    <div class="meta">
-      <span class="q-counter" id="q-counter">Вопрос 1 из 10</span>
-      <span class="score-live" id="score-live">✓ 0</span>
-    </div>
-    <div class="question-card">
-      <div class="question-text" id="question-text"></div>
-      <div class="options" id="options"></div>
-      <div class="next-row">
-        <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Далее →</button>
-      </div>
-    </div>
+<main class="main">
+
+  <div class="hero">
+    <div class="hero-badge">✨ Проверь свои знания</div>
+    <h1>Добро пожаловать<br>в WowQuiz!</h1>
+    <p>Выбери тему и пройди викторину из 10 вопросов. Сохрани результат и попади в таблицу лидеров!</p>
+    <a class="btn" href="quiz.html?cat=general">▶ Быстрый старт</a>
   </div>
 
-  <!-- RESULT SCREEN -->
-  <div class="screen" id="screen-result">
-    <div class="result-card">
-      <span class="result-emoji" id="result-emoji">🏆</span>
-      <h2 id="result-title">Отличный результат!</h2>
-      <p class="sub" id="result-sub">Ты ответил правильно на большинство вопросов</p>
-      <div class="score-circle" id="score-circle">
-        <div class="score-inner">
-          <div class="num" id="score-num">0</div>
-          <div class="den" id="score-den">из 10</div>
-        </div>
-      </div>
-      <div class="result-stats">
-        <div class="stat-pill green" id="stat-correct">✓ 0 правильно</div>
-        <div class="stat-pill red" id="stat-wrong">✗ 0 неправильно</div>
-        <div class="stat-pill" id="stat-pct">0%</div>
-      </div>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <button class="btn secondary" onclick="restartQuiz()">↺ Пройти снова</button>
-        <button class="btn" onclick="showStart()">🏠 На главную</button>
-      </div>
-    </div>
+  <div class="section-label">Выбери категорию</div>
+  <div class="categories">
+
+    <a class="cat-card" href="quiz.html?cat=general">
+      <span class="cat-emoji">🌍</span>
+      <h3>Общие знания</h3>
+      <p>История, география, литература и наука — широкий кругозор проверяется здесь.</p>
+      <div class="cat-meta">📋 10 вопросов &nbsp;·&nbsp; ⏱ ~3 мин</div>
+      <button class="cat-start" onclick="event.preventDefault();location.href='quiz.html?cat=general'">Начать →</button>
+    </a>
+
+    <a class="cat-card" href="quiz.html?cat=science">
+      <span class="cat-emoji">🔬</span>
+      <h3>Наука</h3>
+      <p>Биология, физика, химия и астрономия — для любознательных умов.</p>
+      <div class="cat-meta">📋 10 вопросов &nbsp;·&nbsp; ⏱ ~3 мин</div>
+      <button class="cat-start" onclick="event.preventDefault();location.href='quiz.html?cat=science'">Начать →</button>
+    </a>
+
+    <a class="cat-card" href="quiz.html?cat=tech">
+      <span class="cat-emoji">💻</span>
+      <h3>Технологии</h3>
+      <p>Программирование, IT, интернет и известные компании.</p>
+      <div class="cat-meta">📋 10 вопросов &nbsp;·&nbsp; ⏱ ~3 мин</div>
+      <button class="cat-start" onclick="event.preventDefault();location.href='quiz.html?cat=tech'">Начать →</button>
+    </a>
+
   </div>
 
-</div>
+  <div class="leaderboard-link">
+    <div class="section-label">Последние результаты</div>
+    <a href="leaderboard.html" style="font-size:.85rem;color:var(--accent2);text-decoration:none;">Все результаты →</a>
+  </div>
+  <div id="recent-container" style="margin-top:16px"></div>
+
+</main>
 
 <script>
-const QUESTIONS = [
-  {
-    q: "Какой элемент является наименьшей единицей живого организма?",
-    opts: ["Атом", "Молекула", "Клетка", "Ядро"],
-    correct: 2
-  },
-  {
-    q: "В каком году был запущен первый искусственный спутник Земли?",
-    opts: ["1945", "1957", "1961", "1969"],
-    correct: 1
-  },
-  {
-    q: "Что означает аббревиатура HTML?",
-    opts: [
-      "HyperText Markup Language",
-      "HighText Machine Language",
-      "Hyperlink and Text Markup Language",
-      "Home Tool Markup Language"
-    ],
-    correct: 0
-  },
-  {
-    q: "Столица Австралии — это:",
-    opts: ["Сидней", "Мельбурн", "Брисбен", "Канберра"],
-    correct: 3
-  },
-  {
-    q: "Скорость света в вакууме составляет приблизительно:",
-    opts: ["300 000 км/с", "150 000 км/с", "1 080 000 км/ч", "30 000 км/с"],
-    correct: 0
-  },
-  {
-    q: "Кто написал роман «Преступление и наказание»?",
-    opts: ["Лев Толстой", "Антон Чехов", "Фёдор Достоевский", "Иван Тургенев"],
-    correct: 2
-  },
-  {
-    q: "Что такое CSS?",
-    opts: [
-      "Язык программирования для серверной части",
-      "Язык описания внешнего вида веб-страниц",
-      "База данных для веб-сайтов",
-      "Протокол передачи данных"
-    ],
-    correct: 1
-  },
-  {
-    q: "Символ какого элемента в таблице Менделеева — Au?",
-    opts: ["Серебро", "Алюминий", "Аргон", "Золото"],
-    correct: 3
-  },
-  {
-    q: "Сколько битов содержит один байт?",
-    opts: ["4", "16", "8", "32"],
-    correct: 2
-  },
-  {
-    q: "В каком году была основана компания Google?",
-    opts: ["1994", "1996", "1998", "2001"],
-    correct: 2
-  }
-];
-
-const LETTERS = ['А', 'Б', 'В', 'Г'];
-
-let current = 0;
-let score = 0;
-let answered = false;
-
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function startQuiz() {
-  current = 0; score = 0; answered = false;
-  show('screen-quiz');
-  renderQuestion();
-}
-
-function renderQuestion() {
-  const q = QUESTIONS[current];
-  answered = false;
-
-  document.getElementById('q-counter').textContent = `Вопрос ${current + 1} из ${QUESTIONS.length}`;
-  document.getElementById('score-live').textContent = `✓ ${score}`;
-  document.getElementById('progress').style.width = `${(current / QUESTIONS.length) * 100}%`;
-  document.getElementById('question-text').textContent = q.q;
-  document.getElementById('btn-next').disabled = true;
-
-  const container = document.getElementById('options');
-  container.innerHTML = '';
-  q.opts.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.innerHTML = `<span class="letter">${LETTERS[i]}</span>${opt}`;
-    btn.onclick = () => selectAnswer(i);
-    container.appendChild(btn);
-  });
-}
-
-function selectAnswer(idx) {
-  if (answered) return;
-  answered = true;
-
-  const q = QUESTIONS[current];
-  const buttons = document.querySelectorAll('.option-btn');
-  buttons.forEach(b => b.disabled = true);
-
-  if (idx === q.correct) {
-    buttons[idx].classList.add('correct');
-    score++;
-  } else {
-    buttons[idx].classList.add('wrong');
-    buttons[q.correct].classList.add('correct');
-  }
-
-  document.getElementById('score-live').textContent = `✓ ${score}`;
-  document.getElementById('btn-next').disabled = false;
-  document.getElementById('btn-next').textContent =
-    current === QUESTIONS.length - 1 ? 'Результат 🎉' : 'Далее →';
-}
-
-function nextQuestion() {
-  if (!answered) return;
-  current++;
-  if (current >= QUESTIONS.length) {
-    showResult();
-  } else {
-    renderQuestion();
-  }
-}
-
-function showResult() {
-  const total = QUESTIONS.length;
-  const pct = Math.round((score / total) * 100);
-
-  document.getElementById('score-num').textContent = score;
-  document.getElementById('score-den').textContent = `из ${total}`;
-  document.getElementById('score-circle').style.setProperty('--pct', `${pct}%`);
-  document.getElementById('stat-correct').textContent = `✓ ${score} правильно`;
-  document.getElementById('stat-wrong').textContent = `✗ ${total - score} неправильно`;
-  document.getElementById('stat-pct').textContent = `${pct}%`;
-
-  let emoji, title, sub;
-  if (pct === 100) { emoji = '🏆'; title = 'Идеально!'; sub = 'Все 10 вопросов — правильно. Блестяще!'; }
-  else if (pct >= 80) { emoji = '🥇'; title = 'Отличный результат!'; sub = 'Ты хорошо знаешь материал. Так держать!'; }
-  else if (pct >= 60) { emoji = '👍'; title = 'Хорошая работа!'; sub = 'Неплохо, но есть над чем поработать.'; }
-  else if (pct >= 40) { emoji = '📚'; title = 'Неплохо!'; sub = 'Больше половины правильно — есть прогресс!'; }
-  else { emoji = '💪'; title = 'Не сдавайся!'; sub = 'Попробуй ещё раз — у тебя всё получится!'; }
-
-  document.getElementById('result-emoji').textContent = emoji;
-  document.getElementById('result-title').textContent = title;
-  document.getElementById('result-sub').textContent = sub;
-
-  document.getElementById('progress').style.width = '100%';
-  show('screen-result');
-}
-
-function restartQuiz() { startQuiz(); }
-function showStart() { show('screen-start'); }
+  (function renderRecent() {
+    const results = JSON.parse(localStorage.getItem('wowquiz_results') || '[]');
+    const container = document.getElementById('recent-container');
+    if (!results.length) {
+      container.innerHTML = '<div class="empty-recent">Ты ещё не прошёл ни одной викторины.<br>Выбери категорию выше и начни прямо сейчас!</div>';
+      return;
+    }
+    const last6 = results.slice(-6).reverse();
+    container.innerHTML = '<div class="recent-grid">' +
+      last6.map(r => {
+        const pctClass = r.pct >= 70 ? 'high' : r.pct >= 40 ? 'mid' : 'low';
+        const date = new Date(r.date).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        return `<div class="recent-card">
+          <div class="recent-cat">${r.catName}</div>
+          <div class="recent-score">${r.score} <span>из ${r.total}</span></div>
+          <div class="recent-pct ${pctClass}">${r.pct}%</div>
+          <div class="recent-date">${date}</div>
+        </div>`;
+      }).join('') +
+      '</div>';
+  })();
 </script>
+
 </body>
 </html>
