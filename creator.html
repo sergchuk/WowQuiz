@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — Создать тест</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card2: #273549;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --radius: 16px;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+    /* NAV */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #0f172aee; backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; height: 60px;
+    }
+    .nav-logo {
+      font-size: 1.2rem; font-weight: 800; text-decoration: none;
+      background: linear-gradient(135deg, var(--accent2), #c4b5fd);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .nav-link {
+      color: var(--muted); text-decoration: none;
+      padding: 6px 12px; border-radius: 8px; font-size: .85rem;
+      transition: background .15s, color .15s; white-space: nowrap;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--card2); color: var(--text); }
+
+    .main { max-width: 800px; margin: 0 auto; padding: 48px 20px 80px; }
+
+    /* PAGE HEADER */
+    .page-header { margin-bottom: 36px; }
+    .page-header .badge {
+      display: inline-block; background: #6366f120; border: 1px solid #6366f140;
+      color: var(--accent2); border-radius: 999px;
+      padding: 5px 18px; font-size: .8rem; font-weight: 600; margin-bottom: 16px;
+    }
+    .page-header h1 { font-size: 1.9rem; font-weight: 800; margin-bottom: 8px; }
+    .page-header p { color: var(--muted); font-size: .95rem; line-height: 1.6; }
+
+    /* FORM */
+    .form-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px; margin-bottom: 40px;
+    }
+    .form-card h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 24px; }
+
+    .field { margin-bottom: 20px; }
+    .field label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+    .field input[type="text"] {
+      width: 100%; background: var(--card2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; color: var(--text); font-size: .95rem;
+      transition: border-color .15s; outline: none;
+    }
+    .field input[type="text"]:focus { border-color: var(--accent); }
+    .field input[type="text"]::placeholder { color: var(--muted); }
+
+    /* QUESTION BLOCK */
+    .questions-list { display: flex; flex-direction: column; gap: 20px; margin-bottom: 24px; }
+
+    .q-block {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px;
+    }
+    .q-block-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+    }
+    .q-num { font-size: .82rem; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: .5px; }
+    .q-del {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      border-radius: 8px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .q-del:hover { border-color: var(--wrong); color: var(--wrong); }
+
+    .q-text-input {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 11px 14px; color: var(--text); font-size: .95rem;
+      margin-bottom: 16px; transition: border-color .15s; outline: none;
+    }
+    .q-text-input:focus { border-color: var(--accent); }
+    .q-text-input::placeholder { color: var(--muted); }
+
+    .opts-label { font-size: .78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+
+    .opt-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    .opt-row input[type="radio"] { accent-color: var(--correct); width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+    .opt-row input[type="text"] {
+      flex: 1; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 9px; padding: 9px 13px; color: var(--text); font-size: .9rem;
+      transition: border-color .15s; outline: none;
+    }
+    .opt-row input[type="text"]:focus { border-color: var(--accent); }
+    .opt-row input[type="text"]::placeholder { color: var(--muted); }
+    .opt-letter {
+      width: 28px; height: 28px; border-radius: 8px; background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .78rem; flex-shrink: 0;
+    }
+    .correct-hint { font-size: .75rem; color: var(--muted); margin-top: 2px; }
+
+    /* FORM ACTIONS */
+    .form-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+    /* SAVED QUIZZES */
+    .section-label {
+      font-size: .75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); margin-bottom: 18px;
+    }
+    .quiz-list { display: flex; flex-direction: column; gap: 12px; }
+    .quiz-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 22px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      flex-wrap: wrap;
+    }
+    .quiz-info { flex: 1; min-width: 0; }
+    .quiz-name { font-weight: 700; font-size: 1rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quiz-meta { font-size: .78rem; color: var(--muted); }
+    .quiz-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .empty {
+      background: var(--card); border: 1px dashed var(--border);
+      border-radius: var(--radius); padding: 48px 20px; text-align: center;
+    }
+    .empty .icon { font-size: 2.4rem; margin-bottom: 12px; }
+    .empty p { color: var(--muted); font-size: .9rem; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 11px;
+      padding: 11px 22px; font-size: .9rem; font-weight: 600;
+      cursor: pointer; transition: opacity .18s, transform .18s;
+      box-shadow: 0 4px 16px #6366f150; text-decoration: none;
+    }
+    .btn:hover { opacity: .9; transform: translateY(-1px); }
+    .btn.secondary {
+      background: var(--card2); box-shadow: none; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn.secondary:hover { border-color: var(--accent2); }
+    .btn.danger {
+      background: linear-gradient(135deg, #ef4444, #f87171);
+      box-shadow: 0 4px 12px #ef444428;
+      font-size: .82rem; padding: 8px 14px;
+    }
+    .btn.play {
+      font-size: .82rem; padding: 8px 14px;
+    }
+    .btn.sm { font-size: .82rem; padding: 8px 16px; }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 22px; font-size: .9rem;
+      transition: transform .3s ease; z-index: 999; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: var(--correct); color: var(--correct); }
+    .toast.error { border-color: var(--wrong); color: var(--wrong); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="creator.html" class="nav-link active">✏️ Создать</a>
+      <a href="about.html" class="nav-link">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="badge">✏️ Конструктор тестов</div>
+    <h1>Создай свой тест</h1>
+    <p>Придумай вопросы, задай варианты ответов и отметь правильный — тест сохранится прямо в браузере.</p>
+  </div>
+
+  <!-- CREATE FORM -->
+  <div class="form-card">
+    <h2>Новый тест</h2>
+
+    <div class="field">
+      <label>Название теста</label>
+      <input type="text" id="quiz-name" placeholder="Например: Знатоки кино" maxlength="80" />
+    </div>
+
+    <div class="questions-list" id="questions-list"></div>
+
+    <div class="form-actions">
+      <button class="btn secondary sm" onclick="addQuestion()">+ Добавить вопрос</button>
+      <button class="btn sm" onclick="saveQuiz()">💾 Сохранить тест</button>
+    </div>
+  </div>
+
+  <!-- SAVED QUIZZES -->
+  <div class="section-label">Сохранённые тесты</div>
+  <div id="saved-list"></div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const LETTERS = ['А', 'Б', 'В', 'Г'];
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = 'toast'; }, 2800);
+}
+
+function addQuestion() {
+  const list = document.getElementById('questions-list');
+  const idx = list.children.length;
+
+  const block = document.createElement('div');
+  block.className = 'q-block';
+  block.dataset.idx = idx;
+
+  block.innerHTML = `
+    <div class="q-block-header">
+      <span class="q-num">Вопрос ${idx + 1}</span>
+      <button class="q-del" onclick="removeQuestion(this)">✕ Удалить</button>
+    </div>
+    <input class="q-text-input" type="text" placeholder="Текст вопроса..." maxlength="300" />
+    <div class="opts-label">Варианты ответов <span class="correct-hint">— отметь правильный</span></div>
+    ${[0,1,2,3].map(i => `
+      <div class="opt-row">
+        <span class="opt-letter">${LETTERS[i]}</span>
+        <input type="radio" name="correct_${idx}" value="${i}" ${i === 0 ? 'checked' : ''} />
+        <input type="text" placeholder="Вариант ${LETTERS[i]}..." maxlength="200" />
+      </div>
+    `).join('')}
+  `;
+
+  list.appendChild(block);
+  renumberQuestions();
+}
+
+function removeQuestion(btn) {
+  const block = btn.closest('.q-block');
+  block.remove();
+  renumberQuestions();
+}
+
+function renumberQuestions() {
+  const list = document.getElementById('questions-list');
+  Array.from(list.children).forEach((block, i) => {
+    block.dataset.idx = i;
+    block.querySelector('.q-num').textContent = `Вопрос ${i + 1}`;
+    block.querySelectorAll('input[type="radio"]').forEach(r => r.name = `correct_${i}`);
+  });
+}
+
+function saveQuiz() {
+  const name = document.getElementById('quiz-name').value.trim();
+  if (!name) { showToast('Введите название теста', 'error'); return; }
+
+  const blocks = document.querySelectorAll('.q-block');
+  if (!blocks.length) { showToast('Добавьте хотя бы один вопрос', 'error'); return; }
+
+  const questions = [];
+  let valid = true;
+
+  blocks.forEach((block, i) => {
+    const qText = block.querySelector('.q-text-input').value.trim();
+    if (!qText) { showToast(`Введите текст вопроса ${i + 1}`, 'error'); valid = false; return; }
+
+    const optInputs = block.querySelectorAll('.opt-row input[type="text"]');
+    const opts = Array.from(optInputs).map(inp => inp.value.trim());
+    if (opts.some(o => !o)) { showToast(`Заполните все варианты в вопросе ${i + 1}`, 'error'); valid = false; return; }
+
+    const correctRadio = block.querySelector('input[type="radio"]:checked');
+    const c = correctRadio ? parseInt(correctRadio.value) : 0;
+
+    questions.push({ q: qText, opts, c });
+  });
+
+  if (!valid) return;
+
+  const customs = JSON.parse(localStorage.getItem('wowquiz_custom') || '[]');
+  customs.push({ name, questions, date: new Date().toISOString() });
+  localStorage.setItem('wowquiz_custom', JSON.stringify(customs));
+
+  document.getElementById('quiz-name').value = '';
+  document.getElementById('questions-list').innerHTML = '';
+
+  showToast('Тест сохранён!', 'success');
+  renderSaved();
+}
+
+function deleteQuiz(idx) {
+  if (!confirm('Удалить этот тест?')) return;
+  const customs = JSON.parse(localStorage.getItem('wowquiz_custom') || '[]');
+  customs.splice(idx, 1);
+  localStorage.setItem('wowquiz_custom', JSON.stringify(customs));
+  renderSaved();
+}
+
+function renderSaved() {
+  const customs = JSON.parse(localStorage.getItem('wowquiz_custom') || '[]');
+  const el = document.getElementById('saved-list');
+
+  if (!customs.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="icon">📝</div>
+      <p>Ты ещё не создал ни одного теста.<br>Заполни форму выше и нажми «Сохранить тест».</p>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="quiz-list">${customs.map((q, i) => {
+    const date = new Date(q.date).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: '2-digit' });
+    return `<div class="quiz-item">
+      <div class="quiz-info">
+        <div class="quiz-name">${escHtml(q.name)}</div>
+        <div class="quiz-meta">${q.questions.length} вопросов · создан ${date}</div>
+      </div>
+      <div class="quiz-actions">
+        <a class="btn play" href="quiz.html?cat=custom&id=${i}">▶ Пройти</a>
+        <button class="btn danger" onclick="deleteQuiz(${i})">🗑</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+addQuestion();
+renderSaved();
+</script>
+</body>
+</html>

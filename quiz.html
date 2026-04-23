@@ -203,6 +203,7 @@
       <a href="index.html" class="nav-link">Главная</a>
       <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
       <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="creator.html" class="nav-link">✏️ Создать</a>
       <a href="about.html" class="nav-link">О нас</a>
     </div>
   </div>
@@ -326,24 +327,67 @@ const ALL = {
 };
 
 const LETTERS = ['А', 'Б', 'В', 'Г'];
-let cat = 'general', QUESTIONS = [], current = 0, score = 0, answered = false;
+let cat = 'general', customId = null, rawQs = [], QUESTIONS = [], current = 0, score = 0, answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function shuffleOpts(q) {
+  const idx = [0, 1, 2, 3];
+  for (let i = 3; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return { q: q.q, opts: idx.map(i => q.opts[i]), c: idx.indexOf(q.c) };
+}
 
 function init() {
   const p = new URLSearchParams(location.search);
   cat = p.get('cat') || 'general';
-  if (!ALL[cat]) cat = 'general';
-  const data = ALL[cat];
-  QUESTIONS = data.qs;
-  document.getElementById('cat-emoji').textContent = data.emoji;
-  document.getElementById('cat-title').textContent = data.name;
-  document.getElementById('cat-desc').textContent = data.desc;
-  document.title = `WowQuiz — ${data.name}`;
+  customId = p.get('id') || null;
+
+  let name, emoji, desc;
+
+  if (cat === 'custom' && customId !== null) {
+    const customs = JSON.parse(localStorage.getItem('wowquiz_custom') || '[]');
+    const quiz = customs[parseInt(customId)];
+    if (!quiz || !quiz.questions || !quiz.questions.length) {
+      document.getElementById('cat-title').textContent = 'Тест не найден';
+      document.getElementById('cat-desc').textContent = 'Этот тест был удалён или не существует.';
+      document.querySelector('.btn[onclick="startQuiz()"]').disabled = true;
+      return;
+    }
+    name = quiz.name;
+    emoji = '✏️';
+    desc = `Пользовательский тест — ${quiz.questions.length} вопросов.`;
+    rawQs = quiz.questions;
+    document.title = `WowQuiz — ${name}`;
+  } else {
+    if (!ALL[cat]) cat = 'general';
+    const data = ALL[cat];
+    name = data.name;
+    emoji = data.emoji;
+    desc = data.desc;
+    rawQs = data.qs;
+    document.title = `WowQuiz — ${name}`;
+  }
+
+  document.getElementById('cat-emoji').textContent = emoji;
+  document.getElementById('cat-title').textContent = name;
+  document.getElementById('cat-desc').textContent = desc;
 
   const saved = JSON.parse(localStorage.getItem('wowquiz_results') || '[]');
-  const best = saved.filter(r => r.cat === cat).reduce((m, r) => Math.max(m, r.score), -1);
+  const bestKey = cat === 'custom' ? `custom_${customId}` : cat;
+  const best = saved.filter(r => r.cat === bestKey).reduce((m, r) => Math.max(m, r.score), -1);
   if (best >= 0) {
     document.getElementById('best-block').style.display = 'block';
-    document.getElementById('best-text').textContent = `🏅 Твой лучший результат: ${best} из ${QUESTIONS.length}`;
+    document.getElementById('best-text').textContent = `🏅 Твой лучший результат: ${best} из ${rawQs.length}`;
   }
 }
 
@@ -354,6 +398,7 @@ function show(id) {
 
 function startQuiz() {
   current = 0; score = 0; answered = false;
+  QUESTIONS = shuffle(rawQs).map(shuffleOpts);
   show('screen-quiz');
   renderQuestion();
 }
@@ -403,8 +448,12 @@ function showResult() {
   const total = QUESTIONS.length;
   const pct = Math.round((score / total) * 100);
 
+  const catKey = cat === 'custom' ? `custom_${customId}` : cat;
+  const catName = cat === 'custom'
+    ? (JSON.parse(localStorage.getItem('wowquiz_custom') || '[]')[parseInt(customId)]?.name || 'Свой тест')
+    : ALL[cat].name;
   const saved = JSON.parse(localStorage.getItem('wowquiz_results') || '[]');
-  saved.push({ cat, catName: ALL[cat].name, score, total, pct, date: new Date().toISOString() });
+  saved.push({ cat: catKey, catName, score, total, pct, date: new Date().toISOString() });
   localStorage.setItem('wowquiz_results', JSON.stringify(saved));
 
   document.getElementById('score-num').textContent = score;
