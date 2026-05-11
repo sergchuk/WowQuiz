@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — Профиль</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/profile.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link active">👤 Профиль</a>
+      <a href="creator.html" class="nav-link">✏️ Создать</a>
+      <a href="about.html" class="nav-link">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="page-title">👤 Мой профиль</div>
+
+  <div class="stats-row" id="stats-row"></div>
+
+  <div class="section-title">Прогресс по категориям</div>
+  <div class="cat-progress" id="cat-progress"></div>
+
+  <div class="section-header">
+    <div class="section-title" style="margin-bottom:0">Достижения</div>
+    <span id="ach-counter" style="font-size:.8rem;color:var(--muted)"></span>
+  </div>
+  <div class="achievements-grid" id="achievements"></div>
+
+  <div class="section-header">
+    <div class="section-title" style="margin-bottom:0">История игр</div>
+    <button class="btn danger" onclick="clearAll()">🗑 Очистить</button>
+  </div>
+  <div id="history"></div>
+
+</main>
+
+<script src="../js/storage.js"></script>
+<script src="../js/profile.js"></script>
+</body>
+</html>

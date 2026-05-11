@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — Таблица лидеров</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/leaderboard.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link active">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="creator.html" class="nav-link">✏️ Создать</a>
+      <a href="about.html" class="nav-link">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="page-header">
+    <h1>🏆 Таблица лидеров</h1>
+    <button class="btn danger" onclick="clearHistory()">🗑 Очистить историю</button>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all', this)">Все категории</button>
+    <button class="filter-btn" onclick="setFilter('general', this)">🌍 Общие знания</button>
+    <button class="filter-btn" onclick="setFilter('science', this)">🔬 Наука</button>
+    <button class="filter-btn" onclick="setFilter('tech', this)">💻 Технологии</button>
+  </div>
+
+  <div id="content"></div>
+
+</main>
+
+<script src="../js/storage.js"></script>
+<script src="../js/leaderboard.js"></script>
+</body>
+</html>

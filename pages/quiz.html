@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — Викторина</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/quiz.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="creator.html" class="nav-link">✏️ Создать</a>
+      <a href="about.html" class="nav-link">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- START SCREEN -->
+  <div class="screen active" id="screen-start">
+    <div class="start-card">
+      <span class="emoji" id="cat-emoji">🧠</span>
+      <h1 id="cat-title">Викторина</h1>
+      <p id="cat-desc">Проверь свои знания!</p>
+      <div class="badge">
+        <span>📋 10 вопросов</span>
+        <span>⏱ ~3 мин</span>
+        <span>🎯 1 попытка</span>
+      </div>
+      <br>
+      <div id="best-block" style="display:none">
+        <div class="best-block" id="best-text">🏅 Лучший результат: —</div>
+        <br>
+      </div>
+      <button class="btn" onclick="startQuiz()">▶ Начать викторину</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="meta">
+      <span class="q-counter" id="q-counter">Вопрос 1 из 10</span>
+      <span class="score-live" id="score-live"></span>
+    </div>
+    <div class="question-card">
+      <div class="question-text" id="question-text"></div>
+      <div class="options" id="options"></div>
+      <div class="next-row">
+        <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Далее →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <span class="result-emoji" id="result-emoji">🏆</span>
+      <h2 id="result-title">Отличный результат!</h2>
+      <p class="sub" id="result-sub">Ты ответил правильно на большинство вопросов</p>
+      <div class="score-circle" id="score-circle">
+        <div class="score-inner">
+          <div class="num" id="score-num">0</div>
+          <div class="den" id="score-den">из 10</div>
+        </div>
+      </div>
+      <div class="result-stats">
+        <div class="stat-pill green" id="stat-correct">✓ 0 правильно</div>
+        <div class="stat-pill red" id="stat-wrong">✗ 0 неправильно</div>
+        <div class="stat-pill" id="stat-pct">0%</div>
+      </div>
+      <button class="q-review-toggle" id="review-toggle" onclick="toggleReview()">▾ Разбор ответов</button>
+      <div class="q-review" id="q-review" style="display:none"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn secondary" onclick="startQuiz()">↺ Ещё раз</button>
+        <button class="btn secondary" onclick="location.href='../index.html'">🏠 Главная</button>
+        <button class="btn" onclick="location.href='leaderboard.html'">🏆 Лидеры</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/quiz.js"></script>
+</body>
+</html>

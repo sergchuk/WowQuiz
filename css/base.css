@@ -1,0 +1,68 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --card2: #273549;
+  --accent: #6366f1;
+  --accent2: #818cf8;
+  --correct: #22c55e;
+  --wrong: #ef4444;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #334155;
+  --radius: 16px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* NAV */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: #0f172aee; backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border); padding: 0 20px;
+}
+.nav-inner {
+  max-width: 1000px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.nav-logo {
+  font-size: 1.2rem; font-weight: 800; text-decoration: none;
+  background: linear-gradient(135deg, var(--accent2), #c4b5fd);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.nav-link {
+  color: var(--muted); text-decoration: none;
+  padding: 6px 12px; border-radius: 8px; font-size: .85rem;
+  transition: background .15s, color .15s; white-space: nowrap;
+}
+.nav-link:hover, .nav-link.active { background: var(--card2); color: var(--text); }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff; border: none; border-radius: 12px;
+  padding: 14px 28px; font-size: 1rem; font-weight: 600;
+  cursor: pointer; transition: opacity .18s, transform .18s;
+  box-shadow: 0 4px 18px #6366f155; text-decoration: none;
+}
+.btn:hover { opacity: .9; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn.secondary {
+  background: var(--card2); box-shadow: none;
+  border: 1px solid var(--border); color: var(--text);
+}
+.btn.sm { font-size: .82rem; padding: 8px 16px; }
+.btn.danger {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  box-shadow: 0 4px 14px #ef444430;
+}
+.btn:disabled { opacity: .4; cursor: default; transform: none; }

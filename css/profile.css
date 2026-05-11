@@ -1,0 +1,94 @@
+.main { max-width: 960px; margin: 0 auto; padding: 48px 20px 80px; }
+
+.page-title { font-size: 1.9rem; font-weight: 800; margin-bottom: 32px; }
+
+.stats-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 40px;
+}
+.stat-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 18px;
+}
+.stat-box .icon { font-size: 1.4rem; margin-bottom: 10px; }
+.stat-box .val { font-size: 1.9rem; font-weight: 800; color: var(--accent2); }
+.stat-box .lbl { font-size: .76rem; color: var(--muted); margin-top: 4px; }
+
+.section-title {
+  font-size: .75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted); margin-bottom: 16px;
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+}
+
+/* CATEGORY PROGRESS */
+.cat-progress { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+.cat-row {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.cat-row-icon { font-size: 1.5rem; flex-shrink: 0; }
+.cat-row-info { flex: 1; min-width: 120px; }
+.cat-row-name { font-weight: 700; font-size: .95rem; margin-bottom: 6px; }
+.cat-row-meta { font-size: .78rem; color: var(--muted); }
+.cat-row-bar { flex: 2; min-width: 140px; }
+.bar-track {
+  height: 8px; background: var(--border); border-radius: 99px;
+  overflow: hidden; margin-bottom: 4px;
+}
+.bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .6s ease; }
+.bar-label { font-size: .78rem; color: var(--accent2); font-weight: 700; }
+.cat-row-score {
+  font-size: 1.3rem; font-weight: 800; color: var(--accent2);
+  white-space: nowrap; min-width: 60px; text-align: right;
+}
+.no-data { color: var(--muted); font-size: .85rem; }
+
+/* ACHIEVEMENTS */
+.achievements-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px; margin-bottom: 40px;
+}
+.ach-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 16px; transition: border-color .2s;
+}
+.ach-card.unlocked { border-color: #6366f150; background: #6366f108; }
+.ach-card .ach-icon { font-size: 2rem; margin-bottom: 8px; }
+.ach-card.locked .ach-icon { filter: grayscale(1); opacity: .4; }
+.ach-card .ach-name { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
+.ach-card.locked .ach-name { color: var(--muted); }
+.ach-card .ach-desc { font-size: .78rem; color: var(--muted); line-height: 1.4; }
+.ach-badge {
+  display: inline-block; font-size: .68rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 999px; margin-top: 6px;
+}
+.ach-badge.done { background: #22c55e1a; color: var(--correct); }
+.ach-badge.todo { background: #ffffff0a; color: var(--muted); }
+
+/* HISTORY */
+.history-list { display: flex; flex-direction: column; gap: 8px; }
+.hist-row {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.hist-cat { font-size: .8rem; color: var(--accent2); min-width: 100px; }
+.hist-score { font-weight: 700; font-size: .95rem; }
+.hist-pct {
+  font-size: .78rem; font-weight: 700; padding: 2px 8px;
+  border-radius: 999px; margin-left: auto;
+}
+.hist-pct.high { background: #22c55e1a; color: var(--correct); }
+.hist-pct.mid  { background: #f59e0b1a; color: #f59e0b; }
+.hist-pct.low  { background: #ef44441a; color: var(--wrong); }
+.hist-date { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+
+.empty-state {
+  background: var(--card); border: 1px dashed var(--border);
+  border-radius: var(--radius); padding: 48px 20px; text-align: center;
+}
+.empty-state p { color: var(--muted); margin-bottom: 20px; }

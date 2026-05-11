@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — О проекте</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/about.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="creator.html" class="nav-link">✏️ Создать</a>
+      <a href="about.html" class="nav-link active">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="about-hero">
+    <div class="badge">🧠 WowQuiz</div>
+    <h1>Интерактивная<br>викторина на знания</h1>
+    <p>WowQuiz — это браузерная викторина с тремя категориями вопросов, системой достижений и таблицей лидеров. Всё работает прямо в браузере без регистрации.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Как играть</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Выбери категорию</h3>
+          <p>На главной странице выбери одну из трёх тем: Общие знания, Наука или Технологии.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Отвечай на вопросы</h3>
+          <p>Тебя ждут 10 вопросов с 4 вариантами ответа. Вопросы и варианты перемешиваются каждый раз.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Получи оценку</h3>
+          <p>В конце викторины ты увидишь итоговый результат, процент правильных ответов и разбор каждого вопроса.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Улучшай результат</h3>
+          <p>Результаты сохраняются в профиле. Разблокируй достижения, побей собственный рекорд и попади в таблицу лидеров!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Доступные категории</div>
+    <div class="cat-cards">
+      <a class="cat-card" href="quiz.html?cat=general">
+        <span class="emoji">🌍</span>
+        <h3>Общие знания</h3>
+        <p>История, география, литература, базовая наука — для широкого кругозора.</p>
+        <span class="meta">10 вопросов</span>
+      </a>
+      <a class="cat-card" href="quiz.html?cat=science">
+        <span class="emoji">🔬</span>
+        <h3>Наука</h3>
+        <p>Биология, физика, химия и астрономия — для любознательных умов.</p>
+        <span class="meta">10 вопросов</span>
+      </a>
+      <a class="cat-card" href="quiz.html?cat=tech">
+        <span class="emoji">💻</span>
+        <h3>Технологии</h3>
+        <p>Программирование, IT, интернет и известные компании.</p>
+        <span class="meta">10 вопросов</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Технологии</div>
+    <div class="tech-pills">
+      <div class="tech-pill"><span class="t-icon">📄</span> HTML5</div>
+      <div class="tech-pill"><span class="t-icon">🎨</span> CSS3</div>
+      <div class="tech-pill"><span class="t-icon">⚡</span> Vanilla JavaScript</div>
+      <div class="tech-pill"><span class="t-icon">💾</span> localStorage</div>
+      <div class="tech-pill"><span class="t-icon">📐</span> CSS Grid & Flexbox</div>
+      <div class="tech-pill"><span class="t-icon">🔗</span> URL Params API</div>
+    </div>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:14px;line-height:1.6">
+      Проект реализован без фреймворков и библиотек — только чистый HTML, CSS и JavaScript. Результаты хранятся в <code style="background:var(--card2);padding:1px 6px;border-radius:4px">localStorage</code> браузера.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Частые вопросы</div>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Сохраняются ли мои результаты? <span class="arrow">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Да, все результаты сохраняются в памяти браузера (localStorage). Они доступны в профиле и таблице лидеров. При очистке данных браузера история удалится.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Можно ли проходить викторину несколько раз? <span class="arrow">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Да, количество попыток не ограничено. Каждый результат записывается в историю, а в профиле отображается лучший результат по каждой категории.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Что такое достижения? <span class="arrow">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Достижения — это награды за определённые результаты: первая игра, высокий процент, прохождение всех категорий и другие. Отслеживай их в разделе «Профиль».</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Нужна ли регистрация? <span class="arrow">▼</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Нет! WowQuiz работает полностью в браузере без регистрации, входа и подключения к интернету. Просто открой страницу и начинай.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h2>Готов проверить знания?</h2>
+    <p>Выбери категорию и начни прямо сейчас — это займёт всего ~3 минуты!</p>
+    <a class="btn" href="../index.html">▶ Выбрать категорию</a>
+  </div>
+
+</main>
+
+<script>
+function toggleFaq(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
+</script>
+</body>
+</html>

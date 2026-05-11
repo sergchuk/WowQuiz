@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WowQuiz — Создать тест</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/creator.css" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">🧠 WowQuiz</a>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Главная</a>
+      <a href="leaderboard.html" class="nav-link">🏆 Лидеры</a>
+      <a href="profile.html" class="nav-link">👤 Профиль</a>
+      <a href="creator.html" class="nav-link active">✏️ Создать</a>
+      <a href="about.html" class="nav-link">О нас</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="page-header">
+    <div class="badge">✏️ Конструктор тестов</div>
+    <h1>Создай свой тест</h1>
+    <p>Придумай вопросы, задай варианты ответов и отметь правильный — тест сохранится прямо в браузере.</p>
+  </div>
+
+  <div class="form-card">
+    <h2>Новый тест</h2>
+    <div class="field">
+      <label>Название теста</label>
+      <input type="text" id="quiz-name" placeholder="Например: Знатоки кино" maxlength="80" />
+    </div>
+    <div class="questions-list" id="questions-list"></div>
+    <div class="form-actions">
+      <button class="btn secondary sm" onclick="addQuestion()">+ Добавить вопрос</button>
+      <button class="btn sm" onclick="saveQuiz()">💾 Сохранить тест</button>
+    </div>
+  </div>
+
+  <div class="section-label">Сохранённые тесты</div>
+  <div id="saved-list"></div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/creator.js"></script>
+</body>
+</html>
